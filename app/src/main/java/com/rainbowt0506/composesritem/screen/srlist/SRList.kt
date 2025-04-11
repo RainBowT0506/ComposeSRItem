@@ -87,23 +87,8 @@ fun SRList(
                         .background(MaterialTheme.colorScheme.surface)
 
                 ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Image(
-                            Icons.Default.List,
-                            "",
-                            colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.onBackground),
-                            modifier = Modifier.detectReorder(state)
-                        )
-                        Image(
-                            painter = rememberAsyncImagePainter(item.url),
-                            contentDescription = null,
-                            modifier = Modifier.size(128.dp)
-                        )
-                        Text(
-                            text = item.name,
-                            modifier = Modifier.padding(16.dp)
-                        )
-                    }
+                    TeamItem(state, item)
+
                     Divider()
                 }
             }
@@ -111,6 +96,46 @@ fun SRList(
         item {
             HeaderFooter(stringResource(R.string.footer_title), vm.footerImage)
         }
+    }
+}
+
+@Composable
+private fun TeamItem(
+    state: ReorderableLazyListState,
+    team: Team
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(76.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Image(
+                painter = rememberAsyncImagePainter(team.url),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(56.dp)
+                    .clip(CircleShape),
+            )
+            Spacer(modifier = Modifier.width(10.dp))
+            Text(
+                text = team.name,
+                fontSize = 16.sp,
+                color = N900,
+                fontWeight = FontWeight.Medium
+            )
+        }
+
+        Icon(
+            painter = painterResource(id = R.drawable.ic_drag),
+            contentDescription = "Drag",
+            modifier = Modifier
+                .detectReorder(state)
+                .size(20.dp),
+            tint = N600
+        )
     }
 }
 

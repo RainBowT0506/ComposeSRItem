@@ -46,6 +46,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.rememberAsyncImagePainter
 import com.rainbowt0506.composesritem.R
 import org.burnoutcrew.reorderable.ReorderableItem
+import org.burnoutcrew.reorderable.ReorderableLazyListState
 import org.burnoutcrew.reorderable.detectReorder
 import org.burnoutcrew.reorderable.rememberReorderableLazyListState
 import org.burnoutcrew.reorderable.reorderable
@@ -74,23 +75,7 @@ fun ReorderImageList(
                         .background(MaterialTheme.colorScheme.surface)
 
                 ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Image(
-                            Icons.Default.List,
-                            "",
-                            colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.onBackground),
-                            modifier = Modifier.detectReorder(state)
-                        )
-                        Image(
-                            painter = rememberAsyncImagePainter(item),
-                            contentDescription = null,
-                            modifier = Modifier.size(128.dp)
-                        )
-                        Text(
-                            text = item,
-                            modifier = Modifier.padding(16.dp)
-                        )
-                    }
+                    TeamItem(state, item)
                     Divider()
                 }
             }
@@ -98,6 +83,30 @@ fun ReorderImageList(
         item {
             HeaderFooter(stringResource(R.string.footer_title), vm.footerImage)
         }
+    }
+}
+
+@Composable
+private fun TeamItem(
+    state: ReorderableLazyListState,
+    item: String
+) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Image(
+            Icons.Default.List,
+            "",
+            colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.onBackground),
+            modifier = Modifier.detectReorder(state)
+        )
+        Image(
+            painter = rememberAsyncImagePainter(item),
+            contentDescription = null,
+            modifier = Modifier.size(128.dp)
+        )
+        Text(
+            text = item,
+            modifier = Modifier.padding(16.dp)
+        )
     }
 }
 
