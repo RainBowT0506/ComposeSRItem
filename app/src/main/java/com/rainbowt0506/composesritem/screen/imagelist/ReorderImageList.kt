@@ -64,7 +64,7 @@ fun ReorderImageList(
         item {
             HeaderFooter(stringResource(R.string.header_title), vm.headerImage)
         }
-        items(vm.images, { it }) { item ->
+        items(vm.teams, { it }) { item ->
             ReorderableItem(state, item) { isDragging ->
                 val elevation = animateDpAsState(if (isDragging) 8.dp else 0.dp)
                 Column(

@@ -24,14 +24,43 @@ import kotlin.random.Random
 
 
 class SRListViewModel : ViewModel() {
+
+    // 頁首與頁尾圖片隨機產生（用於 UI 上方與下方裝飾）
     val headerImage = "https://picsum.photos/seed/compose${Random.nextInt(Int.MAX_VALUE)}/400/200"
     val footerImage = "https://picsum.photos/seed/compose${Random.nextInt(Int.MAX_VALUE)}/400/200"
-    var images by mutableStateOf(List(20) { "https://picsum.photos/seed/compose$it/200/300" })
+
+    // 初始化 20 組 Team 資料，每組資料包含 id、圖片 URL、名稱等
+    var teams by mutableStateOf(
+        List(20) {
+            Team(
+                id = it,
+                url = "https://picsum.photos/seed/team$it/200/200",
+                name = "Team $it",
+                isPin = false,
+                isOptionsRevealed = false
+            )
+        }
+    )
+
+    /**
+     * 拖曳排序的邏輯處理，會將某一項目移動到指定位置
+     */
     fun onMove(from: ItemPosition, to: ItemPosition) {
-        images = images.toMutableList().apply {
-            add(images.indexOfFirst { it == to.key }, removeAt(images.indexOfFirst { it == from.key }))
+        // 比對 Team.id（Int）與傳入的 key（必須一致為 Int）
+        val fromIndex = teams.indexOfFirst { it.id == from.key }
+        val toIndex = teams.indexOfFirst { it.id == to.key }
+
+        // 如果找不到對應索引則直接 return，避免錯誤
+        if (fromIndex == -1 || toIndex == -1) return
+
+        // 交換順序：先移除 fromIndex，再插入到 toIndex
+        teams = teams.toMutableList().apply {
+            add(toIndex, removeAt(fromIndex))
         }
     }
 
-    fun canDragOver(draggedOver: ItemPosition, dragging: ItemPosition) = images.any { it == draggedOver.key }
+
+    fun canDragOver(draggedOver: ItemPosition, dragging: ItemPosition) =
+        teams.any { it.id == draggedOver.key }
+
 }

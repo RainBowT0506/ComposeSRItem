@@ -26,12 +26,12 @@ import kotlin.random.Random
 class ImageListViewModel : ViewModel() {
     val headerImage = "https://picsum.photos/seed/compose${Random.nextInt(Int.MAX_VALUE)}/400/200"
     val footerImage = "https://picsum.photos/seed/compose${Random.nextInt(Int.MAX_VALUE)}/400/200"
-    var images by mutableStateOf(List(20) { "https://picsum.photos/seed/compose$it/200/300" })
+    var teams by mutableStateOf(List(20) { "https://picsum.photos/seed/compose$it/200/300" })
     fun onMove(from: ItemPosition, to: ItemPosition) {
-        images = images.toMutableList().apply {
-            add(images.indexOfFirst { it == to.key }, removeAt(images.indexOfFirst { it == from.key }))
+        teams = teams.toMutableList().apply {
+            add(teams.indexOfFirst { it == to.key }, removeAt(teams.indexOfFirst { it == from.key }))
         }
     }
 
-    fun canDragOver(draggedOver: ItemPosition, dragging: ItemPosition) = images.any { it == draggedOver.key }
+    fun canDragOver(draggedOver: ItemPosition, dragging: ItemPosition) = teams.any { it == draggedOver.key }
 }

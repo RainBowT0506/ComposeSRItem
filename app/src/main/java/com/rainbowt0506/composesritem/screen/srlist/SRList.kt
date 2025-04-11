@@ -77,8 +77,8 @@ fun SRList(
         item {
             HeaderFooter(stringResource(R.string.header_title), vm.headerImage)
         }
-        items(vm.images, { it }) { item ->
-            ReorderableItem(state, item) { isDragging ->
+        items(vm.teams, key = { it.id }) { item ->
+            ReorderableItem(state, key = item.id) { isDragging ->
                 val elevation = animateDpAsState(if (isDragging) 8.dp else 0.dp)
                 Column(
                     modifier = Modifier
@@ -95,12 +95,12 @@ fun SRList(
                             modifier = Modifier.detectReorder(state)
                         )
                         Image(
-                            painter = rememberAsyncImagePainter(item),
+                            painter = rememberAsyncImagePainter(item.url),
                             contentDescription = null,
                             modifier = Modifier.size(128.dp)
                         )
                         Text(
-                            text = item,
+                            text = item.name,
                             modifier = Modifier.padding(16.dp)
                         )
                     }
