@@ -5,8 +5,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 
 @Composable
 fun <T> rememberSwipeableState(
-    onExpandedToLeft: (T?) -> Unit = {},
-    onExpandedToRight: (T?) -> Unit = {},
+    onExpandedToLeft: (Int?) -> Unit = {},
+    onExpandedToRight: (Int?) -> Unit = {},
     onCollapsed: () -> Unit = {},
     cancelAnimation: SwipeCancelAnimation = NoSwipeCancelAnimation
 ): HorizontalSwipeableState<T> {

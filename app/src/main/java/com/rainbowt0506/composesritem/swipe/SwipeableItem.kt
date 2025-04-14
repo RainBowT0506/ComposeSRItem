@@ -42,7 +42,7 @@ import kotlin.math.roundToInt
 @Composable
 fun <T> SwipeableItem(
     modifier: Modifier = Modifier,
-    data: T,
+    index: Int? = null,
     state: SwipeableState<T>,
     isRevealed: Boolean,
     leftActions: @Composable RowScope.() -> Unit,
@@ -50,8 +50,8 @@ fun <T> SwipeableItem(
     content: @Composable () -> Unit
 ) {
 
-    LaunchedEffect(data) {
-        state.onItemSwiped(data)
+    LaunchedEffect(index) {
+        state.onItemSwiped(index)
     }
 
 

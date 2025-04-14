@@ -12,15 +12,15 @@ import kotlin.math.roundToInt
 
 abstract class SwipeableState<T>(
     protected val scope: CoroutineScope,
-    private val onExpandedToLeft: (T?) -> Unit = {},
-    private val onExpandedToRight: (T?) -> Unit = {},
+    private val onExpandedToLeft: (Int?) -> Unit = {},
+    private val onExpandedToRight: (Int?) -> Unit = {},
     private val onCollapsed: () -> Unit = {},
     val cancelAnimation: SwipeCancelAnimation = NoSwipeCancelAnimation
 ) {
     private var isReadyToAnimate by mutableStateOf(false)
     private val offset = Animatable(0f)
 
-    var currentItem: T? by mutableStateOf(null)
+    var currentIndex: Int? by mutableStateOf(null)
         private set
 
     var leftActionWidth by mutableFloatStateOf(0f)
@@ -29,8 +29,8 @@ abstract class SwipeableState<T>(
     val currentOffset: IntOffset
         get() = IntOffset(offset.value.roundToInt(), 0)
 
-    fun onItemSwiped(item: T?) {
-        currentItem = item
+    fun onItemSwiped(index: Int?) {
+        currentIndex = index
     }
 
     fun updateActionWidths(left: Float, right: Float) {
@@ -65,20 +65,20 @@ abstract class SwipeableState<T>(
     fun onDragEnd() {
         scope.launch {
             val current = offset.value
-            val item = currentItem
+            val itemIndex = currentIndex
             when {
                 current >= leftActionWidth / 2f -> {
                     offset.animateTo(leftActionWidth)
-                    onExpandedToLeft(item)
+                    onExpandedToLeft(itemIndex)
                 }
 
                 current <= -rightActionWidth / 2f -> {
                     offset.animateTo(-rightActionWidth)
-                    onExpandedToRight(item)
+                    onExpandedToRight(itemIndex)
                 }
 
                 else -> {
-                    cancelAnimation.animateCancel(item, Offset(current, 0f))
+                    cancelAnimation.animateCancel(itemIndex, Offset(current, 0f))
                     offset.animateTo(0f)
                     onCollapsed()
                 }
@@ -89,8 +89,8 @@ abstract class SwipeableState<T>(
     fun collapse() {
         scope.launch {
             val current = offset.value
-            val item = currentItem
-            cancelAnimation.animateCancel(item, Offset(current, 0f))
+            val index = currentIndex
+            cancelAnimation.animateCancel(index, Offset(current, 0f))
             offset.animateTo(0f)
             onCollapsed()
         }

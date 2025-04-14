@@ -15,6 +15,7 @@
  */
 package com.rainbowt0506.composesritem.screen.srlist
 
+import android.widget.Toast
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -26,17 +27,14 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.List
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -44,9 +42,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -55,9 +52,13 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.rememberAsyncImagePainter
 import com.rainbowt0506.composesritem.R
+import com.rainbowt0506.composesritem.sr.SwipeableReorderableItem
+import com.rainbowt0506.composesritem.swipe.CopyActionBlock
+import com.rainbowt0506.composesritem.swipe.DeleteActionBlock
+import com.rainbowt0506.composesritem.swipe.PinActionBlock
+import com.rainbowt0506.composesritem.swipe.rememberSwipeableState
 import com.rainbowt0506.composesritem.ui.theme.N600
 import com.rainbowt0506.composesritem.ui.theme.N900
-import org.burnoutcrew.reorderable.ReorderableItem
 import org.burnoutcrew.reorderable.ReorderableLazyListState
 import org.burnoutcrew.reorderable.detectReorder
 import org.burnoutcrew.reorderable.rememberReorderableLazyListState
@@ -68,17 +69,54 @@ fun SRList(
     modifier: Modifier = Modifier,
     vm: SRListViewModel = viewModel(),
 ) {
-    val state = rememberReorderableLazyListState(onMove = vm::onMove, canDragOver = vm::canDragOver)
+    val context = LocalContext.current
+
+    val reorderableState =
+        rememberReorderableLazyListState(onMove = vm::onMove, canDragOver = vm::canDragOver)
+
     LazyColumn(
-        state = state.listState,
+        state = reorderableState.listState,
         modifier = modifier
-            .then(Modifier.reorderable(state))
+            .then(Modifier.reorderable(reorderableState))
     ) {
         item {
             HeaderFooter(stringResource(R.string.header_title), vm.headerImage)
         }
-        items(vm.teams, key = { it.id }) { item ->
-            ReorderableItem(state, key = item.id) { isDragging ->
+        itemsIndexed(vm.teams, key = { _, team -> team.id }) { index, team ->
+            val swipeableState = rememberSwipeableState<Team>(
+                onExpandedToLeft = {
+                    vm.updateTeamById(team.id, team.copy(isOptionsRevealed = true))
+                },
+                onExpandedToRight = {
+                    vm.updateTeamById(team.id, team.copy(isOptionsRevealed = true))
+                },
+                onCollapsed = {
+                    vm.updateTeamById(team.id, team.copy(isOptionsRevealed = false))
+                }
+            )
+
+            SwipeableReorderableItem(
+                swipeableState = swipeableState,
+                reorderableState = reorderableState,
+                key = team.id,
+                isRevealed = team.isOptionsRevealed,
+                leftActions = {
+                    PinActionBlock(isPin = team.isPin) {
+                        Toast.makeText(context, "Pinned ${team.name}", Toast.LENGTH_SHORT)
+                            .show()
+                    }
+                    CopyActionBlock {
+                        Toast.makeText(context, "Copy ${team.name}", Toast.LENGTH_SHORT).show()
+                    }
+                },
+                rightActions = {
+                    DeleteActionBlock {
+                        Toast.makeText(context, "Deleted ${team.name}", Toast.LENGTH_SHORT)
+                            .show()
+                        vm.removeTeam(team)
+                    }
+                }
+            ) { isDragging ->
                 val elevation = animateDpAsState(if (isDragging) 8.dp else 0.dp)
                 Column(
                     modifier = Modifier
@@ -87,7 +125,7 @@ fun SRList(
                         .background(MaterialTheme.colorScheme.surface)
 
                 ) {
-                    TeamItem(state, item)
+                    TeamItem(reorderableState, team)
 
                     Divider()
                 }

@@ -63,4 +63,13 @@ class SRListViewModel : ViewModel() {
     fun canDragOver(draggedOver: ItemPosition, dragging: ItemPosition) =
         teams.any { it.id == draggedOver.key }
 
+    fun updateTeamById(id: Int, newValue: Team) {
+        teams = teams.map { if (it.id == id) newValue else it }
+    }
+
+
+    fun removeTeam(team: Team) {
+        teams = teams.toMutableList().apply { remove(team) }
+    }
+
 }

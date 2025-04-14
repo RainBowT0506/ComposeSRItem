@@ -3,8 +3,8 @@ import kotlinx.coroutines.CoroutineScope
 
 class HorizontalSwipeableState<T>(
     scope: CoroutineScope,
-    onExpandedToLeft: (T?) -> Unit = {},
-    onExpandedToRight: (T?) -> Unit = {},
+    onExpandedToLeft: (Int?) -> Unit = {},
+    onExpandedToRight: (Int?) -> Unit = {},
     onCollapsed: () -> Unit = {},
     cancelAnimation: SwipeCancelAnimation = NoSwipeCancelAnimation
 ) : SwipeableState<T>(
